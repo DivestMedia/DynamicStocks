@@ -24,13 +24,16 @@
             </div>
         </section>
         <tabs tabclass="is-centered is-boxed" :invertColor="true" >
-            <tab name="My Portfolio">
+            <tab name="My Portfolio" v-if="!superuser">
                 <stocktrade-portfolio></stocktrade-portfolio>
             </tab>
-            <tab name="Watchlist">
+            <tab name="Transaction Logs" v-if="superuser">
+                <stocktrade-admin></stocktrade-admin>
+            </tab>
+            <tab name="Watchlist" v-if="!superuser">
                 <stocktrade-watchlist></stocktrade-watchlist>
             </tab>
-            <tab name="Transaction History">
+            <tab name="Transaction History" v-if="!superuser">
                 <stocktrade-transactions></stocktrade-transactions>
             </tab>
             <tab name="Preferences">
@@ -47,6 +50,7 @@ import StockTradeWatchList from './StockTradeWatchList.vue';
 import StockTradePreferences from './StockTradePreferences.vue';
 import StockTransactions from './StockTransactions.vue';
 import StockPortfolio from './StockPortfolio.vue';
+import StockAdmin from './StockAdmin.vue';
 import Tabs from './utils/Tabs.vue';
 import Tab from './utils/Tab.vue';
 
@@ -68,8 +72,15 @@ export default {
         'stocktrade-transactions' : StockTransactions,
         'stocktrade-portfolio' : StockPortfolio,
         'stocktrade-preferences' : StockTradePreferences,
+        'stocktrade-admin' : StockAdmin,
         'tabs' : Tabs,
         'tab' : Tab,
+    },
+    props: {
+        'superuser' : {
+            type : Boolean,
+            default : false,
+        }
     },
     created: function(){
 

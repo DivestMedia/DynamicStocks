@@ -11,7 +11,7 @@ const stocktrade = new Vue({
     template : `
     <div>
     <div v-if="userStatusChecked">
-    <stocktrade v-if="isLoggedIn"></stocktrade>
+    <stocktrade v-if="isLoggedIn" :superuser="user.superuser"></stocktrade>
     <stocktrade-login v-else></stocktrade-login>
 
     </div>
@@ -67,6 +67,10 @@ const stocktrade = new Vue({
                 if(response.status == 200 && response.data.status == 'OK'){
                     self.isLoggedIn = true;
                     self.user = response.data.user;
+
+                    if(self.user.superuser){
+                        self.$localStorage.set('activeTabStocktrade','Transaction Logs')
+                    }
                 }
                 else{
                     self.isLoggedIn = false;

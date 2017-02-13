@@ -70,4 +70,6 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::post('/user/create', 'UserController@store');
     Route::post('/user/authenticate', 'UserController@authenticate');
 
+    Route::post('/client/create', 'UserController@storeClient');
+
 });

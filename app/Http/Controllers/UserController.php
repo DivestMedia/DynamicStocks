@@ -285,6 +285,8 @@ class UserController extends Controller
 
             $user = User::select('username','fullname')->where(['username' => $request->get('username')])->first();
 
+            $user->superuser = Auth::user()->hasRole('admin');
+
             return response()->json([
                 'error' => [],
                 'status' => 'OK',
@@ -309,10 +311,14 @@ class UserController extends Controller
 
     public function isLoggedIn(){
         if (Auth::check()) {
+
+            $user = Auth::user();
+            $user->superuser = Auth::user()->hasRole('admin');
+
             return response()->json([
                 'error' => [],
                 'status' => 'OK',
-                'user' => Auth::user()
+                'user' => $user
             ]);
         }
 
@@ -565,5 +571,64 @@ class UserController extends Controller
             'profile' => asset($path . $filename)
         ]);
     }
+
+    public function storeClient(Request $request){
+
+
+
+        $validator = Validator::make($request->client, [
+            'username' => 'required|unique:users|alpha_dash|min:6',
+            'title' => 'required',
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'password' => 'required_with:password_confirmation|confirmed',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'error' => $validator->errors()->all(),
+                'status' => 'FAILED'
+            ]);
+        }
+
+        $fullname = $request->client['title'] . ' ' . $request->client['firstname'] . ' ' .$request->client['lastname'];
+
+        $user = User::create([
+            'username' => $request->client['username'],
+            'fullname' => $fullname,
+            'password' => bcrypt($request->client['password'])
+        ]);
+
+        $user->attachRole(2);
+
+        $userinfo = [
+            'companyname' => $request->client['companyname'] ?: '-',
+            'companyaddress' => $request->client['companyaddress'] ?: '-',
+            'country' => $request->client['country'] ?: '-',
+            'mobilenum' => $request->client['mobilenum'] ?: '-',
+            'officenum' => $request->client['officenum'] ?: '-',
+            'position' => $request->client['position'] ?: '-',
+            'state' => $request->client['state'] ?: '-',
+            'title' => $request->client['title'] ?: '-',
+            'firstname' => $request->client['firstname'] ?: '-',
+            'lastname' => $request->client['lastname'] ?: '-',
+        ];
+
+        foreach ($userinfo as $key => $value) {
+            UserInfo::updateOrCreate([
+                'user_id' => $user->id,
+                'key' => $key,
+            ],[
+                'value' => $value
+            ]);
+        }
+
+        return response()->json([
+            'error' => [],
+            'status' => 'OK',
+            'data' => $user
+        ]);
+    }
+
 
 }

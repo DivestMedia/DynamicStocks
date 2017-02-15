@@ -145,64 +145,92 @@
                                 </modal>
                                 <label class="label">Client Name</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. John Dale Cross">
+                                    <input type="hidden" v-model="record.username">
+                                    <autocomplete
+                                    url="/api/v1/client/search"
+                                    anchor="username"
+                                    label="fullname"
+                                    placeholder="e.g. John"
+                                    class-name="input"
+                                    :onSelect="setClientName"
+                                    ></autocomplete>
                                 </p>
                             </div>
+
+                        </div>
+                        <form class="columns is-multiline" @submit.prevent="onCreateRecordSubmit" @reset.prevent="onCreateRecordReset">
                             <div class="column is-one-third">
                                 <label class="label">Stock Symbol</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. YHOO">
+                                    <input class="input" type="text" placeholder="e.g. YHOO" v-model="record.symbol">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Property Name</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. Yahoo! Inc.">
+                                    <input class="input" type="text" placeholder="e.g. Yahoo! Inc." v-model="record.name">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Exchange Name</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. NMS">
+                                    <input class="input" type="text" placeholder="e.g. NMS" v-model="record.exchange">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Property Type</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. Equity">
+                                    <input class="input" type="text" placeholder="e.g. Equity" v-model="record.type">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Reminder</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. Notes">
+                                    <input class="input" type="text" placeholder="e.g. Notes" v-model="record.notes">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Purchased Date</label>
                                 <p class="control">
-                                    <input class="input" type="date" placeholder="e.g. Equity">
+                                    <input class="input" type="datetime-local" placeholder="e.g. Equity" v-model="record.date">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Purchased Price</label>
                                 <p class="control">
-                                    <input class="input" type="number" min="0" value="1000">
+                                    <input class="input" type="number" min="0" v-model="record.price">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Purchased Quantity</label>
                                 <p class="control">
-                                    <input class="input" type="number" min="0" value="100">
+                                    <input class="input" type="number" min="0" v-model="record.quantity">
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Total Purchased</label>
                                 <p class="control">
-                                    <input class="input" type="number" min="0" value="10000" readonly>
+                                    <input class="input" type="number" min="0" readonly :value="record.price * record.quantity">
                                 </p>
                             </div>
-                        </div>
+                            <div class="column is-full" v-if="recordSaveError">
+                                <div class="notification is-danger">
+                                    <ul>
+                                        <li v-for="error in recordSaveError">{{ error }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="column is-full" v-if="recordSaveSuccess">
+                                <div class="notification is-success">
+                                    Record created successfully.
+                                </div>
+                            </div>
+                            <div class="column">
+                                <button class="button is-primary" type="submit" :class="{ 'is-loading' : recordSaving }">Save Record</button>
+                                <button class="button" type="reset">Reset Form</button>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             </div>
@@ -213,25 +241,42 @@
 
 import Modal from './utils/Modal.vue';
 import Axios from 'axios';
+import Events from './Events.js';
+import Autocomplete from 'vue2-autocomplete-js';
 
+var autocomplete = Vue.extend({
+    mixins: [Autocomplete],
+    mounted: function(){
+        var self = this;
+        self.$el.children[0].className = 'input autocomplete-input';
+    }
+});
 export default {
     data : function(){
         return {
+            record : {
+                quantity : 100,
+                price : 1000
+            },
             clientNew : {},
             clientSaving : false,
             clientSaveError : false,
             clientSaveSuccess : false,
+            recordSaving : false,
+            recordSaveError : false,
+            recordSaveSuccess : false,
             api : {
-                storeClient : hostname + "/api/v1/client/create/"
+                storeClient : hostname + "/api/v1/client/create/",
+                storeRecord : hostname + "/api/v1/transaction/create/",
             }
         };
     },
     components : {
-        'modal' : Modal
+        'modal' : Modal,
+        autocomplete,
     },
     methods : {
         onCreateClientSubmit(){
-
             var self = this;
             self.clientSaving = true;
             self.clientSaveSuccess = false;
@@ -250,8 +295,43 @@ export default {
                 self.clientSaving = false;
             });
         },
+        onCreateRecordSubmit(){
+            var self = this;
+            self.recordSaving = true;
+            self.recordSaveSuccess = false;
+            self.recordSaveError = false;
+
+            Axios.post(self.api.storeRecord, { record :  self.record } ).then(function(response){
+                if(response.data.error.length){
+                    self.recordSaveError = response.data.error;
+                }else{
+                    self.recordSaveError = false;
+                    self.recordSaveSuccess = true;
+                    self.onCreateClientReset();
+                }
+                self.recordSaving = false;
+            }).catch(function (error) {
+                if(error.response.data.error.length){
+                    self.recordSaveError = error.response.data.error;
+                }
+                self.recordSaving = false;
+            });
+        },
         onCreateClientReset(){
             this.clientNew = {};
+            this.recordSaving = false;
+        },
+        onCreateRecordReset(){
+            this.record = {
+                quantity : 100,
+                price : 1000
+            };
+            this.recordSaving = false;
+            this.recordSaveSuccess = false;
+            this.recordSaveError = false;
+        },
+        setClientName(data){
+            this.record.username = data.username;
         }
     }
 }

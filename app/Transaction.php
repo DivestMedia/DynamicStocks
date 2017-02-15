@@ -14,8 +14,11 @@ class Transaction extends Model
     */
     protected $fillable = [
         'user_id',
-        'type',
         'symbol',
+        'name',
+        'exchange',
+        'type',
+        'notes',
         'qty',
         'price',
     ];

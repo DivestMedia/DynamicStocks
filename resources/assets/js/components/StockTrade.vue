@@ -30,6 +30,9 @@
             <tab name="Transaction Logs" v-if="superuser">
                 <stocktrade-admin></stocktrade-admin>
             </tab>
+            <tab name="Client List" v-if="superuser">
+                <stocktrade-clients></stocktrade-clients>
+            </tab>
             <tab name="Watchlist" v-if="!superuser">
                 <stocktrade-watchlist></stocktrade-watchlist>
             </tab>
@@ -50,6 +53,7 @@ import StockTradeWatchList from './StockTradeWatchList.vue';
 import StockTradePreferences from './StockTradePreferences.vue';
 import StockTransactions from './StockTransactions.vue';
 import StockPortfolio from './StockPortfolio.vue';
+import StockClients from './StockClients.vue';
 import StockAdmin from './StockAdmin.vue';
 import Tabs from './utils/Tabs.vue';
 import Tab from './utils/Tab.vue';
@@ -73,6 +77,7 @@ export default {
         'stocktrade-portfolio' : StockPortfolio,
         'stocktrade-preferences' : StockTradePreferences,
         'stocktrade-admin' : StockAdmin,
+        'stocktrade-clients' : StockClients,
         'tabs' : Tabs,
         'tab' : Tab,
     },

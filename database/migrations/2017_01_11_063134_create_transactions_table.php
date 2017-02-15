@@ -16,8 +16,11 @@ class CreateTransactionsTable extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->string('type');
             $table->string('symbol');
+            $table->string('name');
+            $table->string('exchange');
+            $table->string('type');
+            $table->string('notes');
             $table->integer('qty');
             $table->decimal('price',12,4);
             $table->timestamps();

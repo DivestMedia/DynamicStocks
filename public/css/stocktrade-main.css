@@ -6538,6 +6538,75 @@ label.panel-block:hover {
   opacity: 0 !important;
 }
 
+#StockTradeWrapper .autocomplete ul {
+  transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -webkit-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  z-index: 10000;
+  position: absolute;
+  list-style: none;
+  background: #f8f8f8;
+  padding: 10px 0;
+  margin: 0;
+  display: inline-block;
+  min-width: 15%;
+  margin-top: 10px;
+}
+
+#StockTradeWrapper .autocomplete ul li a {
+  transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -webkit-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+}
+
+#StockTradeWrapper .autocomplete ul:before {
+  content: "";
+  display: block;
+  position: absolute;
+  height: 0;
+  width: 0;
+  border: 10px solid transparent;
+  border-bottom: 10px solid #f8f8f8;
+  left: 46%;
+  top: -20px;
+}
+
+#StockTradeWrapper .autocomplete ul li a {
+  text-decoration: none;
+  display: block;
+  background: #f8f8f8;
+  color: #2b2b2b;
+  padding: 5px;
+  padding-left: 10px;
+}
+
+#StockTradeWrapper .autocomplete ul li a:hover {
+  color: white;
+  background: #2F9AF7;
+}
+
+#StockTradeWrapper .autocomplete ul li.focus-list a {
+  color: white;
+  background: #2F9AF7;
+}
+
+#StockTradeWrapper .autocomplete ul li a span {
+  display: block;
+  margin-top: 3px;
+  color: grey;
+  font-size: 13px;
+}
+
+#StockTradeWrapper .autocomplete ul li a:hover span {
+  color: white;
+}
+
+#StockTradeWrapper .autocomplete ul li.focus-list a span {
+  color: white;
+}
+
 .is-textnowrap {
   white-space: nowrap;
   display: block;

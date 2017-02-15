@@ -630,5 +630,43 @@ class UserController extends Controller
         ]);
     }
 
+    function getClients(){
+
+        $clients = User::whereHas('roles',function($q){
+            $q->where('display_name','=','Client');
+        })->with('infos')->paginate(10);
+
+        foreach ($clients as $key => $client) {
+
+            $client->joined = $client->updated_at->diffForHumans();
+            $client = $client->toArray();
+
+            $client['infos'] = collect($client['infos'])->mapWithKeys(function($i){
+                return [$i['key'] => $i['value']];
+            });
+
+            $clients[$key] = $client;
+        }
+
+        return response()->json([
+            'error' => [],
+            'status' => 'OK',
+            'data' => $clients
+        ]);
+    }
+
+    public function clientSearch(Request $request)
+    {
+        $term = $request->input('q');
+        if(empty($term)) return response()->json([
+            'status' => 'FAILED',
+            'error' => [
+                'No term specified. Use parameter `q`.'
+            ]
+        ]);
+
+        return response()->json(User::where('fullname','LIKE','%'.$term.'%')->orWhere('username','LIKE','%'.$term.'%')->get(['fullname','username']));
+    }
+
 
 }

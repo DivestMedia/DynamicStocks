@@ -71,5 +71,10 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::post('/user/authenticate', 'UserController@authenticate');
 
     Route::post('/client/create', 'UserController@storeClient');
+    Route::get('/clients', 'UserController@getClients');
+    Route::get('/client/search', 'UserController@clientSearch');
+
+
+    Route::post('/transaction/create', 'TransactionController@storeRecord');
 
 });

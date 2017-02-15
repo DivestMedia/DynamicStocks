@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
+use App\User;
 use App\Transaction;
 use Validator;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
@@ -147,5 +149,43 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function storeRecord(Request $request)
+    {
+
+        $validator = Validator::make($request->get('record'), [
+            'username' => 'required|exists:users',
+            'symbol' => 'required|string|min:1',
+            'name' => 'required|string|min:1',
+            'price' => 'required|numeric|min:1',
+            'quantity' => 'required|numeric|min:1',
+            'date' => 'required|date',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'error' => $validator->errors()->all(),
+                'status' => 'FAILED'
+            ],422);
+        }
+
+        $transaction = Transaction::create([
+            'user_id' => User::where('username','=',$request->record['username'])->first()->id,
+            'symbol' => $request->record['symbol'],
+            'name' => $request->record['name'],
+            'exchange' => $request->record['exchange'],
+            'type' => $request->record['type'],
+            'notes' => $request->record['notes'],
+            'qty' => $request->record['quantity'],
+            'price' => $request->record['price'],
+            'created_at' => Carbon::parse($request->record['date'])
+        ]);
+
+        return response()->json([
+            'error' => $validator->errors()->all(),
+            'data' => $transaction,
+            'status' => 'OK'
+        ]);
     }
 }

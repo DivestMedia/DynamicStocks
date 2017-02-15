@@ -233,6 +233,49 @@
 
                     </div>
                 </div>
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            Transaction Log
+                        </p>
+                    </header>
+                    <div class="card-content">
+                        <div class="content">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Symbol</th>
+                                        <th>Name</th>
+                                        <th>Exchange</th>
+                                        <th>Type</th>
+                                        <th>Price</th>
+                                        <th>Qty</th>
+                                        <th>Total</th>
+                                        <th>Client</th>
+                                        <th>Bought</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template v-if="transactions.length > 0">
+                                        <tr v-for="transaction in transactions">
+                                            <td v-html="transaction.serial"></td>
+                                            <td>{{ transaction.symbol }}</td>
+                                            <td>{{ transaction.name }}</td>
+                                            <td>{{ transaction.exchange }}</td>
+                                            <td>{{ transaction.type }}</td>
+                                            <td v-html="transaction.priceFormatted"></td>
+                                            <td v-html="transaction.qtyFormatted"></td>
+                                            <td v-html="transaction.totalFormatted"></td>
+                                            <td>{{ transaction.user.fullname }}</td>
+                                            <td><span :title="transaction.updated_at">{{ transaction.bought }}</span></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -268,7 +311,10 @@ export default {
             api : {
                 storeClient : hostname + "/api/v1/client/create/",
                 storeRecord : hostname + "/api/v1/transaction/create/",
-            }
+                getTransactionList : hostname + "/api/v1/transactions"
+            },
+            page : 1,
+            transactions : []
         };
     },
     components : {
@@ -308,6 +354,7 @@ export default {
                     self.recordSaveError = false;
                     self.recordSaveSuccess = true;
                     self.onCreateClientReset();
+                    self.getTransactionList();
                 }
                 self.recordSaving = false;
             }).catch(function (error) {
@@ -332,8 +379,20 @@ export default {
         },
         setClientName(data){
             this.record.username = data.username;
+        },
+        getTransactionList(){
+            var self = this;
+            Axios.get(self.api.getTransactionList + '?page=' + self.page).then(function(response){
+                self.transactions = response.data.data.data;
+            }).catch(function (error) {
+
+            });
         }
-    }
+    },
+    created(){
+        this.page = 1;
+        this.getTransactionList();
+    },
 }
 </script>
 

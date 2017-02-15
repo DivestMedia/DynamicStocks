@@ -188,4 +188,29 @@ class TransactionController extends Controller
             'status' => 'OK'
         ]);
     }
+
+    public function getTransactions(Request $request){
+
+        $transactions = Transaction::with('user')->latest()->paginate(10);
+
+        foreach ($transactions as $key => $log) {
+
+            $log->bought = $log->updated_at->diffForHumans();
+            $log->serial = str_pad($log->id, 5, "0", STR_PAD_LEFT);
+
+            $log->priceFormatted = number_format($log->price,2);
+            $log->qtyFormatted = number_format($log->qty,0);
+            $log->total = $log->price * $log->qty;
+            $log->totalFormatted = number_format($log->total,2);
+
+            $transactions[$key] = $log;
+        }
+
+        return response()->json([
+            'error' => [],
+            'status' => 'OK',
+            'data' => $transactions
+        ]);
+
+    }
 }

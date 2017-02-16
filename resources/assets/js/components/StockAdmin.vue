@@ -31,13 +31,13 @@
                                             <div class="column is-one-third">
                                                 <label class="label">First Name</label>
                                                 <p class="control">
-                                                    <input class="input" type="text" name="firstname" placeholder="John" v-model="clientNew.firstname">
+                                                    <input class="input" type="text" name="firstname" placeholder="John" v-model="clientNew.firstname" required>
                                                 </p>
                                             </div>
                                             <div class="column is-one-third">
                                                 <label class="label">Last Name</label>
                                                 <p class="control">
-                                                    <input class="input" type="text" name="lastname" placeholder="Doe" v-model="clientNew.lastname">
+                                                    <input class="input" type="text" name="lastname" placeholder="Doe" v-model="clientNew.lastname" required>
                                                 </p>
                                             </div>
 
@@ -94,7 +94,7 @@
                                             <div class="column is-one-third">
                                                 <label class="label">Email Address</label>
                                                 <p class="control">
-                                                    <input class="input" type="email" placeholder="johndoe@email.com" v-model="clientNew.email">
+                                                    <input class="input" type="email" placeholder="johndoe@email.com" v-model="clientNew.email" required>
                                                 </p>
                                             </div>
                                             <div class="column is-full">
@@ -109,19 +109,19 @@
                                             <div class="column is-one-third">
                                                 <label class="label">Username</label>
                                                 <p class="control">
-                                                    <input class="input" type="text" placeholder="johndoe" v-model="clientNew.username">
+                                                    <input class="input" type="text" placeholder="johndoe" v-model="clientNew.username" required>
                                                 </p>
                                             </div>
                                             <div class="column is-one-third">
                                                 <label class="label">Password</label>
                                                 <p class="control">
-                                                    <input class="input" type="password" v-model="clientNew.password">
+                                                    <input class="input" type="password" v-model="clientNew.password" required>
                                                 </p>
                                             </div>
                                             <div class="column is-one-third">
                                                 <label class="label">Confirm Password</label>
                                                 <p class="control">
-                                                    <input class="input" type="password" v-model="clientNew.password_confirmation">
+                                                    <input class="input" type="password" v-model="clientNew.password_confirmation" required>
                                                 </p>
                                             </div>
                                             <div class="column is-full" v-if="clientSaveError">
@@ -143,9 +143,15 @@
                                         </div>
                                     </form>
                                 </modal>
+
+                            </div>
+
+                        </div>
+                        <form class="columns is-multiline" @submit.prevent="onCreateRecordSubmit" @reset.prevent="onCreateRecordReset">
+                            <div class="column is-full">
                                 <label class="label">Client Name</label>
                                 <p class="control">
-                                    <input type="hidden" v-model="record.username">
+                                    <input type="hidden" v-model="record.username" required>
                                     <autocomplete
                                     url="/api/v1/client/search"
                                     anchor="username"
@@ -153,22 +159,23 @@
                                     placeholder="e.g. John"
                                     class-name="input"
                                     :onSelect="setClientName"
+                                    :onInput="resetNameValidity"
+                                    :onBlur="checkNameValidity"
+                                    :onHide="checkNameValidity"
+                                    :required="true"
                                     ></autocomplete>
                                 </p>
                             </div>
-
-                        </div>
-                        <form class="columns is-multiline" @submit.prevent="onCreateRecordSubmit" @reset.prevent="onCreateRecordReset">
                             <div class="column is-one-third">
                                 <label class="label">Stock Symbol</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. YHOO" v-model="record.symbol">
+                                    <input class="input" type="text" placeholder="e.g. YHOO" v-model="record.symbol" required>
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Property Name</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. Yahoo! Inc." v-model="record.name">
+                                    <input class="input" type="text" placeholder="e.g. Yahoo! Inc." v-model="record.name" required>
                                 </p>
                             </div>
                             <div class="column is-one-third">
@@ -192,19 +199,19 @@
                             <div class="column is-one-third">
                                 <label class="label">Purchased Date</label>
                                 <p class="control">
-                                    <input class="input" type="datetime-local" placeholder="e.g. Equity" v-model="record.date">
+                                    <input class="input" type="datetime-local" placeholder="e.g. Equity" v-model="record.date" required>
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Purchased Price</label>
                                 <p class="control">
-                                    <input class="input" type="number" min="0" v-model="record.price">
+                                    <input class="input" type="number" min="0" v-model="record.price" step="any"  required>
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Purchased Quantity</label>
                                 <p class="control">
-                                    <input class="input" type="number" min="0" v-model="record.quantity">
+                                    <input class="input" type="number" min="0" v-model="record.quantity" required>
                                 </p>
                             </div>
                             <div class="column is-one-third">
@@ -254,6 +261,7 @@
                                         <th>Total</th>
                                         <th>Client</th>
                                         <th>Bought</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -269,6 +277,18 @@
                                             <td v-html="transaction.totalFormatted"></td>
                                             <td>{{ transaction.user.fullname }}</td>
                                             <td><span :title="transaction.updated_at">{{ transaction.bought }}</span></td>
+                                            <td>
+                                                <a class="button has-icon is-small">
+                                                    <span class="icon is-small ">
+                                                        <i class="fa fa-pencil"></i>
+                                                    </span>
+                                                </a>
+                                                <a class="button has-icon is-small is-danger" @click.prevent="deleteTransaction(transaction.id)">
+                                                    <span class="icon is-small ">
+                                                        <i class="fa fa-trash"></i>
+                                                    </span>
+                                                </a>
+                                            </td>
                                         </tr>
                                     </template>
                                 </tbody>
@@ -289,9 +309,24 @@ import Autocomplete from 'vue2-autocomplete-js';
 
 var autocomplete = Vue.extend({
     mixins: [Autocomplete],
+    data : function(){
+        return {
+            inputValid : false
+        };
+    },
+    props: {
+        required : {
+            type : Boolean,
+            default : false
+        }
+    },
     mounted: function(){
         var self = this;
-        self.$el.children[0].className = 'input autocomplete-input';
+        var elem = self.$el.children[0];
+        elem.className = 'input autocomplete-input';
+        if(self.required){
+            elem.setAttribute("required", "required");
+        }
     }
 });
 export default {
@@ -311,7 +346,8 @@ export default {
             api : {
                 storeClient : hostname + "/api/v1/client/create/",
                 storeRecord : hostname + "/api/v1/transaction/create/",
-                getTransactionList : hostname + "/api/v1/transactions"
+                getTransactionList : hostname + "/api/v1/transactions",
+                deleteTransaction : hostname + "/api/v1/transaction/delete",
             },
             page : 1,
             transactions : []
@@ -322,6 +358,17 @@ export default {
         autocomplete,
     },
     methods : {
+        resetNameValidity(){
+            this.$children[1].inputValid = false;
+        },
+        checkNameValidity(){
+            var self = this;
+            var elem = this.$children[1].$el.children[0];
+            if(!this.$children[1].inputValid){
+                // elem.value = '';
+                self.record.username = elem.value;
+            }
+        },
         onCreateClientSubmit(){
             var self = this;
             self.clientSaving = true;
@@ -379,6 +426,7 @@ export default {
         },
         setClientName(data){
             this.record.username = data.username;
+            this.$children[1].inputValid = true;
         },
         getTransactionList(){
             var self = this;
@@ -387,6 +435,14 @@ export default {
             }).catch(function (error) {
 
             });
+        },
+        deleteTransaction(id){
+            var self = this;
+            if (confirm("Are you sure you want to delete this transaction?")) {
+                Axios.post(self.api.deleteTransaction, { id :  id } ).then(function(response){
+                    self.getTransactionList();
+                });
+            }
         }
     },
     created(){

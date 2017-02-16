@@ -146,9 +146,14 @@ class TransactionController extends Controller
     * @param  int  $id
     * @return \Illuminate\Http\Response
     */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $t = Transaction::findOrFail($request->id)->delete();
+
+        return response()->json([
+            'data' => $t,
+            'status' => 'OK'
+        ]);
     }
 
     public function storeRecord(Request $request)
@@ -172,13 +177,13 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create([
             'user_id' => User::where('username','=',$request->record['username'])->first()->id,
-            'symbol' => $request->record['symbol'],
-            'name' => $request->record['name'],
-            'exchange' => $request->record['exchange'],
-            'type' => $request->record['type'],
-            'notes' => $request->record['notes'],
-            'qty' => $request->record['quantity'],
-            'price' => $request->record['price'],
+            'symbol' => $request->record['symbol'] ?: '-',
+            'name' => $request->record['name'] ?: '-',
+            'exchange' => isset($request->record['exchange']) ? $request->record['exchange'] : '-',
+            'type' => isset($request->record['type']) ? $request->record['type'] : '-',
+            'notes' => isset($request->record['notes']) ? $request->record['notes'] : '-',
+            'qty' => $request->record['quantity'] ?: '-',
+            'price' => $request->record['price'] ?: '-',
             'created_at' => Carbon::parse($request->record['date'])
         ]);
 

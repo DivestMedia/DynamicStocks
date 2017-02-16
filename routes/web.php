@@ -76,6 +76,7 @@ Route::group(['prefix' => 'api/v1'], function () {
 
 
     Route::post('/transaction/create', 'TransactionController@storeRecord');
-        Route::get('/transactions', 'TransactionController@getTransactions');
+    Route::get('/transactions', 'TransactionController@getTransactions');
+    Route::post('/transaction/delete', 'TransactionController@destroy');
 
 });

@@ -24,19 +24,13 @@
             </div>
         </section>
         <tabs tabclass="is-centered is-boxed" :invertColor="true" >
-            <tab name="My Portfolio" v-if="!superuser">
-                <stocktrade-portfolio></stocktrade-portfolio>
-            </tab>
-            <tab name="Transaction Logs" v-if="superuser">
+            <tab name="Transactions" v-if="superuser">
                 <stocktrade-admin></stocktrade-admin>
             </tab>
             <tab name="Client List" v-if="superuser">
                 <stocktrade-clients></stocktrade-clients>
             </tab>
-            <tab name="Watchlist" v-if="!superuser">
-                <stocktrade-watchlist></stocktrade-watchlist>
-            </tab>
-            <tab name="Transaction History" v-if="!superuser">
+            <tab name="Transactions" v-if="!superuser">
                 <stocktrade-transactions></stocktrade-transactions>
             </tab>
             <tab name="Preferences">
@@ -62,7 +56,7 @@ import Tab from './utils/Tab.vue';
 export default {
     data: function(){
         return {
-            active : 'portfolio',
+            active : 'Transactions',
             api : {
                 logoutAccount : {
                     url : hostname + "/api/v1/user/logout",

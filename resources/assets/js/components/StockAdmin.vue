@@ -185,9 +185,14 @@
                                 </p>
                             </div>
                             <div class="column is-one-third">
-                                <label class="label">Property Type</label>
+                                <label class="label">Transaction Type</label>
                                 <p class="control">
-                                    <input class="input" type="text" placeholder="e.g. Equity" v-model="record.type">
+                                    <span class="select" name="type">
+                                        <select v-model="record.type">
+                                            <option>BUY</option>
+                                            <option>SELL</option>
+                                        </select>
+                                    </span>
                                 </p>
                             </div>
                             <div class="column is-one-third">
@@ -205,19 +210,31 @@
                             <div class="column is-one-third">
                                 <label class="label">Purchased Price</label>
                                 <p class="control">
-                                    <input class="input" type="number" min="0" v-model="record.price" step="any"  required>
+                                    <input class="input" type="number" min="0" v-model="record.price" step="any"  required >
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Purchased Quantity</label>
                                 <p class="control">
-                                    <input class="input" type="number" min="0" v-model="record.quantity" required>
+                                    <input class="input" type="number" min="0" v-model="record.quantity" required step="any" >
                                 </p>
                             </div>
                             <div class="column is-one-third">
                                 <label class="label">Total Purchased</label>
                                 <p class="control">
                                     <input class="input" type="number" min="0" readonly :value="record.price * record.quantity">
+                                </p>
+                            </div>
+                            <div class="column is-one-third">
+                                <label class="label">Account Value</label>
+                                <p class="control">
+                                    <input class="input" type="number" min="0" required v-model="record.account" step="any" >
+                                </p>
+                            </div>
+                            <div class="column is-one-third">
+                                <label class="label">Cash Value</label>
+                                <p class="control">
+                                    <input class="input" type="number" min="0" required v-model="record.cash" step="any" >
                                 </p>
                             </div>
                             <div class="column is-full" v-if="recordSaveError">
@@ -232,7 +249,7 @@
                                     Record created successfully.
                                 </div>
                             </div>
-                            <div class="column">
+                            <div class="column is-full">
                                 <button class="button is-primary" type="submit" :class="{ 'is-loading' : recordSaving }">Save Record</button>
                                 <button class="button" type="reset">Reset Form</button>
                             </div>
@@ -252,6 +269,7 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Client</th>
                                         <th>Symbol</th>
                                         <th>Name</th>
                                         <th>Exchange</th>
@@ -268,6 +286,7 @@
                                     <template v-if="transactions.length > 0">
                                         <tr v-for="transaction in transactions">
                                             <td v-html="transaction.serial"></td>
+                                            <td>{{ transaction.user.fullname }}</td>
                                             <td>{{ transaction.symbol }}</td>
                                             <td>{{ transaction.name }}</td>
                                             <td>{{ transaction.exchange }}</td>
@@ -290,6 +309,11 @@
                                                 </a>
                                             </td>
                                         </tr>
+                                    </template>
+                                    <template v-if="transactions.length == 0">
+                                        <td colspan="12" class="has-text-centered">
+                                            No transactions yet.
+                                        </td>
                                     </template>
                                 </tbody>
                             </table>
@@ -334,7 +358,11 @@ export default {
         return {
             record : {
                 quantity : 100,
-                price : 1000
+                price : 1000,
+                type : 'BUY',
+                date: moment().format('YYYY-MM-DDThh:mm'),
+                account: 0,
+                cash : 0
             },
             clientNew : {},
             clientSaving : false,

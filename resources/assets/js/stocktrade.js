@@ -38,7 +38,7 @@ const stocktrade = new Vue({
     localStorage: {
         activeTabStocktrade: {
             type: String,
-            default: 'My Portfolio'
+            default: 'Transactions'
         },
     },
     data: {
@@ -69,7 +69,7 @@ const stocktrade = new Vue({
                     self.user = response.data.user;
 
                     if(self.user.superuser){
-                        self.$localStorage.set('activeTabStocktrade','Transaction Logs')
+                        self.$localStorage.set('activeTabStocktrade','Transactions')
                     }
                 }
                 else{

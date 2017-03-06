@@ -22,7 +22,9 @@ class CreateTransactionsTable extends Migration
             $table->string('type');
             $table->string('notes');
             $table->integer('qty');
-            $table->decimal('price',12,4);
+            $table->decimal('price',32,4);
+            $table->decimal('account',32,4);
+            $table->decimal('cash',32,4);
             $table->timestamps();
         });
     }

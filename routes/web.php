@@ -55,6 +55,14 @@ Route::group(['prefix' => 'api/v1' , 'middleware' => 'auth'], function () {
     Route::post('/user/profile/avatarUpdate', 'UserController@uploadProfile');
 
 
+    Route::post('/client/create', 'UserController@storeClient');
+    Route::get('/clients', 'UserController@getClients');
+    Route::get('/client/search', 'UserController@clientSearch');
+
+
+    Route::post('/transaction/create', 'TransactionController@storeRecord');
+    Route::get('/transactions', 'TransactionController@getTransactions');
+    Route::post('/transaction/delete', 'TransactionController@destroy');
 
 });
 
@@ -70,13 +78,5 @@ Route::group(['prefix' => 'api/v1'], function () {
     Route::post('/user/create', 'UserController@store');
     Route::post('/user/authenticate', 'UserController@authenticate');
 
-    Route::post('/client/create', 'UserController@storeClient');
-    Route::get('/clients', 'UserController@getClients');
-    Route::get('/client/search', 'UserController@clientSearch');
-
-
-    Route::post('/transaction/create', 'TransactionController@storeRecord');
-    Route::get('/transactions', 'TransactionController@getTransactions');
-    Route::post('/transaction/delete', 'TransactionController@destroy');
 
 });

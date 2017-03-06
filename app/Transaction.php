@@ -21,6 +21,8 @@ class Transaction extends Model
         'notes',
         'qty',
         'price',
+        'account',
+        'cash',
     ];
 
     /**

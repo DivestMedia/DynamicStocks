@@ -165,6 +165,9 @@ class TransactionController extends Controller
             'name' => 'required|string|min:1',
             'price' => 'required|numeric|min:1',
             'quantity' => 'required|numeric|min:1',
+            'name' => 'required|string|min:1',
+            'account' => 'required|numeric|min:1',
+            'cash' => 'required|numeric|min:1',
             'date' => 'required|date',
         ]);
 
@@ -184,6 +187,8 @@ class TransactionController extends Controller
             'notes' => isset($request->record['notes']) ? $request->record['notes'] : '-',
             'qty' => $request->record['quantity'] ?: '-',
             'price' => $request->record['price'] ?: '-',
+            'account' =>  $request->record['account'],
+            'cash' =>  $request->record['cash'],
             'created_at' => Carbon::parse($request->record['date'])
         ]);
 

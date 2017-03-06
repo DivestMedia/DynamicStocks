@@ -5,6 +5,31 @@
                 <div class="card">
                     <header class="card-header">
                         <p class="card-header-title">
+                            Performance Overview
+                        </p>
+                    </header>
+                    <div class="card-content">
+                        <p>
+                            <nav class="level">
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">Account Value</p>
+                                        <p class="title">$ {{ portfolio.account }}</p>
+                                    </div>
+                                </div>
+                                <div class="level-item has-text-centered">
+                                    <div>
+                                        <p class="heading">Cash Value</p>
+                                        <p class="title">$ {{ portfolio.cash }}</p>
+                                    </div>
+                                </div>
+                            </nav>
+                        </p>
+                    </div>
+                </div>
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
                             Latest Transactions
                         </p>
                         <a class="card-header-icon">
@@ -83,6 +108,10 @@
                 loadingPercent : 0,
                 progressInterval : null,
                 transactions : [],
+                portfolio: {
+                    cash : 0,
+                    account : 0
+                },
                 messages : {
                     loading : "Fetching Latest Transaction"
                 },
@@ -106,7 +135,8 @@
 
                 Axios.get(self.api.getLatestTransactions,{ page : self.page }).then(function(response){
                     if(response.status == 200 && response.data.status == 'OK'){
-                        self.transactions = response.data.data;
+                        self.transactions = response.data.transactions;
+                        self.portfolio = response.data.portfolio;
                         self.isLoading = false;
                     }
                     else{

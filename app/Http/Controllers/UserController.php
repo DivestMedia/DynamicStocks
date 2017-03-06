@@ -329,16 +329,29 @@ class UserController extends Controller
     }
 
     public function getTransactions(){
+        $transactions = User::find(Auth::id())->transactions()->latest()->get()->map(function ($item, $key) {
+            $item->type = strtoupper($item->type);
+            $item->priceFormatted = '$' . number_format($item->price,2);
+            $item->total = $item->price * $item->qty;
+            $item->totalFormatted = '$' . number_format($item->total,2);
+            $item->idFormatted = str_pad($item->id, 6, "0", STR_PAD_LEFT);
+            $item->purchasedTimeAgo = $item->updated_at->diffForHumans();
+            return $item;
+        });
+
+        $portfolio = User::find(Auth::id())->transactions()->select([
+            'account',
+            'cash'
+        ])->latest()->first();
+
+        if(!empty($portfolio)){
+            $portfolio->cash = number_format($portfolio->cash,2);
+            $portfolio->account = number_format($portfolio->account,2);
+        }
+
         return response()->json([
-            'data' => User::find(Auth::id())->transactions()->latest()->get()->map(function ($item, $key) {
-                $item->type = strtoupper($item->type);
-                $item->priceFormatted = '$' . number_format($item->price,2);
-                $item->total = $item->price * $item->qty;
-                $item->totalFormatted = '$' . number_format($item->total,2);
-                $item->idFormatted = str_pad($item->id, 6, "0", STR_PAD_LEFT);
-                $item->purchasedTimeAgo = $item->updated_at->diffForHumans();
-                return $item;
-            }),
+            'transactions' => $transactions,
+            'portfolio' => $portfolio,
             'status' => 'OK'
         ]);
     }

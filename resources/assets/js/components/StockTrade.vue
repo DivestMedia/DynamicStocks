@@ -52,7 +52,6 @@ import StockAdmin from './StockAdmin.vue';
 import Tabs from './utils/Tabs.vue';
 import Tab from './utils/Tab.vue';
 
-
 export default {
     data: function(){
         return {

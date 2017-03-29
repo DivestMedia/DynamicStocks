@@ -347,6 +347,11 @@ class UserController extends Controller
         if(!empty($portfolio)){
             $portfolio->cash = number_format($portfolio->cash,2);
             $portfolio->account = number_format($portfolio->account,2);
+        }else{
+            $portfolio = [
+                'account' => 0,
+                'cash' => 0
+            ];
         }
 
         return response()->json([
